@@ -20,15 +20,15 @@
 
       <div class="box">
          <h3>contact info</h3>
-         <p> <i class="fas fa-phone"></i> +123-456-7890 </p>
-         <p> <i class="fas fa-phone"></i> +111-222-3333 </p>
-         <p> <i class="fas fa-envelope"></i> shaikhanas@gmail.com </p>
-         <p> <i class="fas fa-map-marker-alt"></i> mumbai, india - 400104 </p>
+         <p> <i class="fas fa-phone"></i> (09)082911502 </p>
+         <p> <i class="fas fa-phone"></i> (09)212006547 </p>
+         <p> <i class="fas fa-envelope"></i> leteciasumanga@gmail.com </p>
+         <p> <i class="fas fa-map-marker-alt"></i> Purok 1 Near Molino Beach Resort Amungan Iba Zambales </p>
       </div>
 
       <div class="box">
          <h3>follow us</h3>
-         <a href="#"> <i class="fab fa-facebook-f"></i> facebook </a>
+         <a href="https://www.facebook.com/profile.php?id=100092586726813&mibextid=ZbWKwL"> <i class="fab fa-facebook-f"></i> facebook </a>
          <a href="#"> <i class="fab fa-twitter"></i> twitter </a>
          <a href="#"> <i class="fab fa-instagram"></i> instagram </a>
          <a href="#"> <i class="fab fa-linkedin"></i> linkedin </a>
