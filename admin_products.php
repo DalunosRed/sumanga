@@ -175,14 +175,9 @@ if(isset($_POST['update_product'])){
 
 </section>
 
-
-
-
-
-
-
 <!-- custom admin js file link  -->
 <script src="js/admin_script.js"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+<?php include 'alers.php' ?>
 </body>
 </html>
