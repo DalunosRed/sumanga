@@ -6,6 +6,7 @@ session_start();
 
 $user_id = $_SESSION['user_id'];
 
+
 if(!isset($user_id)){
    header('location:login.php');
 }
@@ -61,7 +62,6 @@ if(isset($_POST['add_to_cart'])){
 
 <section class="products">
 
-   <h1 class="title">latest products</h1>
 
    <div class="box-container">
 

@@ -4,23 +4,30 @@ include 'config.php';
 
 if(isset($_POST['submit'])){
 
-   $name = mysqli_real_escape_string($conn, $_POST['name']);
-   $email = mysqli_real_escape_string($conn, $_POST['email']);
-   $pass = mysqli_real_escape_string($conn, md5($_POST['password']));
-   $cpass = mysqli_real_escape_string($conn, md5($_POST['cpassword']));
-   $user_type = $_POST['user_type'];
+   $first_name = $_POST['first_name'];
+   $first_name = filter_var($first_name, FILTER_SANITIZE_STRING);
+   $last_name = $_POST['last_name'];
+   $last_name = filter_var($last_name, FILTER_SANITIZE_STRING);
+   $email = $_POST['email'];
+   $email = filter_var($email, FILTER_SANITIZE_STRING);
 
-   $select_users = mysqli_query($conn, "SELECT * FROM `users` WHERE email = '$email' AND password = '$pass'") or die('query failed');
+   $pass = sha1($_POST['password']);
+   $pass = filter_var($pass, FILTER_SANITIZE_STRING);
+   $cpass = sha1($_POST['cpassword']);
+   $cpass = filter_var($cpass, FILTER_SANITIZE_STRING);
 
-   if(mysqli_num_rows($select_users) > 0){
-      $message[] = 'user already exist!';
+   $select_users = $conn->prepare("SELECT * FROM `users` WHERE email = '$email' AND password = '$pass'");
+
+   if($select_users->rowCount() > 0){
+      $error_msg[] = 'user already exist!';
    }else{
       if($pass != $cpass){
-         $message[] = 'confirm password not matched!';
+         $error_msg[] = 'confirm password not matched!';
       }else{
-         mysqli_query($conn, "INSERT INTO `users`(name, email, password, user_type) VALUES('$name', '$email', '$cpass', '$user_type')") or die('query failed');
-         $message[] = 'registered successfully!';
-         header('location:login.php');
+         // $user_register= $conn->prepare("INSERT INTO `users`(first_name, last_name, email, password) VALUES('$first_name','$last_name', '$email', '$pass')");
+         $insert_user = $conn->prepare("INSERT INTO `users`(first_name, last_name, email, password) VALUES(?,?,?,?)");
+         $insert_user->execute([$first_name, $last_name, $email, $pass]);
+         $success_reg[] = 'registered successfully!';
       }
    }
 
@@ -59,24 +66,42 @@ if(isset($message)){
    }
 }
 ?>
-   
-<div class="form-container">
+   <div class="reg">
+   <form class="form" action="" method="post">
+    <p class="title">Register </p>
+    <p class="message">Signup now and get full access to our website. </p>
+        <div class="flex">
+        <label>
+            <input required="" placeholder="" type="text" name="last_name" class="input">
+            <span>Last name</span>
+        </label>
 
-   <form action="" method="post">
-      <h3>register now</h3>
-      <input type="text" name="name" placeholder="enter your name" required class="box">
-      <input type="email" name="email" placeholder="enter your email" required class="box">
-      <input type="password" name="password" placeholder="enter your password" required class="box">
-      <input type="password" name="cpassword" placeholder="confirm your password" required class="box">
-      <select name="user_type" class="box">
-         <option value="user">user</option>
-         <option value="admin">admin</option>
-      </select>
-      <input type="submit" name="submit" value="register now" class="btn">
-      <p>already have an account? <a href="login.php">login now</a></p>
-   </form>
-
+        <label>
+            <input required="" placeholder="" type="text" name="first_name" class="input">
+            <span>First name</span>
+        </label>
+    </div>  
+            
+    <label>
+        <input required="" placeholder="" type="email" name="email" class="input">
+        <span>Email</span>
+    </label> 
+        
+    <label>
+        <input required="" placeholder="" type="password" name="password" class="input">
+        <span>Password</span>
+    </label>
+    <label>
+        <input required="" placeholder="" type="password" name="cpassword" class="input">
+        <span>Confirm password</span>
+    </label>
+    <input type="submit" name="submit" value="register now" class="submit">
+    <p class="signin">Already have an acount ?<a href="login.php">Signin</a> </p>
+</form>
 </div>
 
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+<?php include 'alers.php' ?>
 </body>
 </html>

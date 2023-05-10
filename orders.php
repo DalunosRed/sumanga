@@ -38,8 +38,6 @@ if(!isset($user_id)){
 
 <section class="placed-orders">
 
-   <h1 class="title">placed orders</h1>
-
    <div class="box-container">
 
       <?php

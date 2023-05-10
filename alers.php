@@ -12,6 +12,12 @@ if(isset($success_login)){
    }
 }
 
+if(isset($success_reg)){
+   foreach($success_reg as $success_reg){
+      echo '<script>swal("'.$success_reg.'", "", "success").then(function(){window.location = "login.php"});</script>';
+   }
+}
+
 if(isset($success_admin)){
    foreach($success_admin as $success_admin){
       echo '<script>swal("'.$success_admin.'", "", "success").then(function(){window.location = "admin_page.php"});</script>';

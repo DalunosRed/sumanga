@@ -1,38 +1,34 @@
 <?php
 
 include 'config.php';
+
 session_start();
 
-if(isset($_POST['submit'])){
+if(isset($_SESSION['user_id'])){
+   $user_id = $_SESSION['user_id'];
+}else{
+   $user_id = '';
+};
 
-   $email = mysqli_real_escape_string($conn, $_POST['email']);
-   $pass = mysqli_real_escape_string($conn, md5($_POST['password']));
 
-   $select_users = mysqli_query($conn, "SELECT * FROM `users` WHERE email = '$email' AND password = '$pass'") or die('query failed');
+if(isset($_POST['login'])){
+   $email = $_POST['email'];
+   $email = filter_var($email, FILTER_SANITIZE_STRING);
+   $pass = sha1($_POST['password']);
+   $pass = filter_var($pass, FILTER_SANITIZE_STRING);
 
-   if(mysqli_num_rows($select_users) > 0){
+   $select_user = $conn->prepare("SELECT * FROM `users` WHERE email = ? AND password = ?");
+   $select_user->execute([$email, $pass]);
+   $select_user->fetch(PDO::FETCH_ASSOC);
+      
 
-      $row = mysqli_fetch_assoc($select_users);
-
-      if($row['user_type'] == 'admin'){
-
-         $_SESSION['admin_name'] = $row['name'];
-         $_SESSION['admin_email'] = $row['email'];
-         $_SESSION['admin_id'] = $row['id'];
-         $success_admin[] = 'Log in success!';
-
-      }elseif($row['user_type'] == 'user'){
-
-         $_SESSION['user_name'] = $row['name'];
-         $_SESSION['user_email'] = $row['email'];
-         $_SESSION['user_id'] = $row['id'];
-         $success_login[] = 'Log in success!';
-
-      }
-
+   if($select_user->rowCount() > 0){
+      $_SESSION['user_id'] = $row['id'];
+      header('location:index.php');
    }else{
-      $warning_msg[] = 'incorrect email or password!';
+      $warning_msg[] = 'Incorrect username or password!';
    }
+
 
 }
 
@@ -67,18 +63,41 @@ if(isset($message)){
    }
 }
 ?>
-   
-<div class="form-container">
+   <div class="reg">
+   <form class="form" action="" method="post">
+    <p class="title">Login </p>
+            
+    <label>
+        <input required="" placeholder="" type="email" name="email" class="input">
+        <span>Email</span>
+    </label> 
+        
+    <label>
+        <input required="" placeholder="" type="password" name="password" class="input">
+        <span>Password</span>
+    </label>
 
-   <form action="" method="post">
+    <input type="submit" name="login" value="Login" class="submit">
+  
+    <p class="signin">don't have an account? <a href="register.php">register now</a></p>
+</form>
+
+
+
+
+<!-- <div class="form-container">
+
+   <form action="" method="post" class="">
+      
       <h3>login now</h3>
       <input type="email" name="email" placeholder="enter your email" required class="box">
       <input type="password" name="password" placeholder="enter your password" required class="box">
       <input type="submit" name="submit" value="login now" class="btn">
       <p>don't have an account? <a href="register.php">register now</a></p>
+      
    </form>
 
-</div>
+</div> -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
 <?php include 'alers.php' ?>
 
