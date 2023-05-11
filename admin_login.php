@@ -1,35 +1,27 @@
 <?php
 
 include 'config.php';
-session_start();
 
-if(isset($_SESSION['user_id'])){
-   $user_id = $_SESSION['user_id'];
-}else{
-   $user_id = '';
-};
+session_start();
 
 if(isset($_POST['submit'])){
 
-   $email = mysqli_real_escape_string($conn, $_POST['email']);
-   $pass = mysqli_real_escape_string($conn, md5($_POST['password']));
+   $name = $_POST['name'];
+   $name = filter_var($name, FILTER_SANITIZE_STRING);
+   $pass = sha1($_POST['password']);
+   $pass = filter_var($pass, FILTER_SANITIZE_STRING);
 
-   $select_users = mysqli_query($conn, "SELECT * FROM `admin` WHERE email = '$email' AND password = '$pass'") or die('query failed');
+   $select_admin = $conn->prepare("SELECT * FROM `admins` WHERE name = ? AND password = ?");
+   $select_admin->execute([$name, $pass]);
+   $row = $select_admin->fetch(PDO::FETCH_ASSOC);
 
-   if(mysqli_num_rows($select_users) > 0){
-
-      $row = mysqli_fetch_assoc($select_users);
-
-      if($row['user_type'] == 'admin'){
-
-         $_SESSION['admin_name'] = $row['name'];
-         $_SESSION['admin_email'] = $row['email'];
-         $_SESSION['admin_id'] = $row['id'];
-         $success_admin[] = 'Log in success!';
-      }else{
-      $warning_msg[] = 'incorrect email or password!';
+   if($select_admin->rowCount() > 0){
+      $_SESSION['admin_id'] = $row['id'];
+      $success_admin[] = 'Login success!';
+   }else{
+      $error_msg[] = 'incorrect username or password!';
    }
-   }
+
 }
 
 ?>
@@ -68,7 +60,7 @@ if(isset($message)){
 
    <form action="" method="post">
       <h3>login now</h3>
-      <input type="email" name="email" placeholder="enter your email" required class="box">
+      <input type="text" name="name" required placeholder="enter your username" maxlength="20"  class="box" oninput="this.value = this.value.replace(/\s/g, '')">
       <input type="password" name="password" placeholder="enter your password" required class="box">
       <input type="submit" name="submit" value="login now" class="btn">
      

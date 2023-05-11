@@ -12,7 +12,7 @@ if(!isset($admin_id)){
 
 if(isset($_POST['add_product'])){
 
-   $name = mysqli_real_escape_string($conn, $_POST['name']);
+   $name = $_POST['name'];
    $price = $_POST['price'];
    $image = $name.'_img1.' . pathinfo($_FILES['image']['name'],PATHINFO_EXTENSION);
    $image = filter_var($image, FILTER_SANITIZE_STRING);
@@ -24,20 +24,22 @@ if(isset($_POST['add_product'])){
    $allowed = array('png', 'jpg', 'jpeg', 'webp', 'JPG');
    $ext = pathinfo($image, PATHINFO_EXTENSION);
 
-   $select_product_name = mysqli_query($conn, "SELECT name FROM `products` WHERE name = '$name'") or die('query failed');
+   $select_products = $conn->prepare("SELECT * FROM `products` WHERE name = ?");
+   $select_products->execute([$name]);
 
    if($image != $name.'_img1.'){
       if (!in_array($ext, $allowed)) {
          $warning_msg[] = 'Only png, jpg, jpeg and webp are allowed!';
       }else{
-         if(mysqli_num_rows($select_product_name) > 0){
+         if(($select_products) > 0){
          $warning_msg[] = 'product name already added';
       }else{
             if( $_FILES['image']['size'] > 2000000){
                $error_msg[] = 'image size is too large';
             }else{
-               $add_product_query = mysqli_query($conn, "INSERT INTO `products`(name, price, image, category) VALUES('$name','$price', '$image', '$category')") or die('query failed');
-               move_uploaded_file($image_tmp_name, $image_folder);
+      $insert_products = $conn->prepare("INSERT INTO `products`(name, category, price, image) VALUES(?,?,?,?)");
+      $insert_products->execute([$name, $category, $price, $image]);               
+      move_uploaded_file($image_tmp_name, $image_folder);
                $success_msg[] = 'product added successfully!';
             }}
 
@@ -47,11 +49,15 @@ if(isset($_POST['add_product'])){
 
 
 if(isset($_GET['delete'])){
+
    $delete_id = $_GET['delete'];
-   $delete_image_query = mysqli_query($conn, "SELECT image FROM `products` WHERE id = '$delete_id'") or die('query failed');
-   $fetch_delete_image = mysqli_fetch_assoc($delete_image_query);
+   $delete_product_image = $conn->prepare("SELECT * FROM `products` WHERE id = ?");
+   $delete_product_image->execute([$delete_id]);
+   $fetch_delete_image = $delete_product_image->fetch(PDO::FETCH_ASSOC);
    unlink('uploaded_img/'.$fetch_delete_image['image']);
-   mysqli_query($conn, "DELETE FROM `products` WHERE id = '$delete_id'") or die('query failed');
+
+   $delete_product = $conn->prepare("DELETE FROM `products` WHERE id = ?");
+   $delete_product->execute([$delete_id]);
    header('location:admin_products.php');
 }
 
@@ -62,7 +68,7 @@ if(isset($_POST['update_product'])){
    $update_cat = $_POST['update_cat'];
    $update_price = $_POST['update_price'];
 
-   mysqli_query($conn, "UPDATE `products` SET category ='$update_cat', name ='$update_name', price = '$update_price' WHERE id = '$update_p_id'") or die('query failed');
+   $conn->prepare ("UPDATE `products` SET category ='$update_cat', name ='$update_name', price = '$update_price' WHERE id = '$update_p_id'");
 
    $update_image = $_FILES['update_image']['name'];
    $update_image = $_FILES['update_image']['cat'];
@@ -75,14 +81,14 @@ if(isset($_POST['update_product'])){
       if($update_image_size > 2000000){
          $message[] = 'image file size is too large';
       }else{
-         mysqli_query($conn, "UPDATE `products` SET image = '$update_image' WHERE id = '$update_p_id'") or die('query failed');
+         $conn->prepare ("UPDATE `products` SET image = '$update_image' WHERE id = '$update_p_id'");
          move_uploaded_file($update_image_tmp_name, $update_folder);
          unlink('uploaded_img/'.$update_old_image);
       }
    }
 
    
-   $success_msg[] = 'payment status has been updated!';
+   $success_msg[] = ' Product has been updated!';
 
 
 }
@@ -160,10 +166,11 @@ if(isset($_POST['update_product'])){
 <section class="show-products">
       
 <?php
-         $select_products = mysqli_query($conn, "SELECT * FROM `products`") or die('query failed');
-         if(mysqli_num_rows($select_products) > 0){
-            while($fetch_products = mysqli_fetch_assoc($select_products)){
-      ?>
+      $select_products = $conn->prepare("SELECT * FROM `products`");
+      $select_products->execute();
+      if($select_products->rowCount() > 0){
+         while($fetch_products = $select_products->fetch(PDO::FETCH_ASSOC)){ 
+   ?>
       
 <div class="product-display">
    <table class="product-display-table">
@@ -183,7 +190,7 @@ if(isset($_POST['update_product'])){
          <td>₱<?php echo $fetch_products['price']; ?></td>
          <td>
          <a href="admin_products.php?update=<?php echo $fetch_products['id']; ?>" class="option-btn">update</a>
-            <a href="admin_products.php?delete=<?php echo $fetch_products['id']; ?>" class="delete-btn" onclick="return confirm('delete this product?');">delete</a>
+           <a href="admin_products.php?delete=<?php echo $fetch_products['id']; ?>" class="delete-btn" onclick="return confirm('delete this product?');">delete</a>
          </td>
       </tr>
    </table>
@@ -196,31 +203,6 @@ if(isset($_POST['update_product'])){
       ?>
 
 
-
-   <!--
-      <?php
-         $select_products = mysqli_query($conn, "SELECT * FROM `products`") or die('query failed');
-         if(mysqli_num_rows($select_products) > 0){
-            while($fetch_products = mysqli_fetch_assoc($select_products)){
-      ?>
-
-      <div class="box">
-         <img src="uploaded_img/<?php echo $fetch_products['image']; ?>" alt="">
-         <div class="name"><?php echo $fetch_products['name']; ?></div>
-         <div class="category"><?php echo $fetch_products['category']; ?></div>
-         <div class="price">₱<?php echo $fetch_products['price']; ?></div>
-         <a href="admin_products.php?update=<?php echo $fetch_products['id']; ?>" class="option-btn">update</a>
-         <a href="admin_products.php?delete=<?php echo $fetch_products['id']; ?>" class="delete-btn" onclick="return confirm('delete this product?');">delete</a>
-      </div>
-      <?php
-         }
-      }else{
-         echo '<p class="empty">no products added yet!</p>';
-      }
-      ?>
-   </div>
-   -->
-
 </section>
 
 <section class="edit-product-form">
@@ -228,9 +210,9 @@ if(isset($_POST['update_product'])){
    <?php
       if(isset($_GET['update'])){
          $update_id = $_GET['update'];
-         $update_query = mysqli_query($conn, "SELECT * FROM `products` WHERE id = '$update_id'") or die('query failed');
-         if(mysqli_num_rows($update_query) > 0){
-            while($fetch_update = mysqli_fetch_assoc($update_query)){
+         $update_query =$conn->prepare ("SELECT * FROM `products` WHERE id = '$update_id'");
+         if(($update_query) > 0){
+            while($fetch_update = ($update_query)){
    ?>
    <form action="" method="post" enctype="multipart/form-data">
       <input type="hidden" name="update_p_id" value="<?php echo $fetch_update['id']; ?>">

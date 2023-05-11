@@ -13,21 +13,22 @@ if(!isset($user_id)){
 if(isset($_POST['update_cart'])){
    $cart_id = $_POST['cart_id'];
    $cart_quantity = $_POST['cart_quantity'];
-   mysqli_query($conn, "UPDATE `cart` SET quantity = '$cart_quantity' WHERE id = '$cart_id'") or die('query failed');
+   $conn->prepare("UPDATE `cart` SET quantity = '$cart_quantity' WHERE id = '$cart_id'");
    $message[] = 'cart quantity updated!';
 }
 
 if(isset($_GET['delete'])){
-   $delete_id = $_GET['delete'];
-   mysqli_query($conn, "DELETE FROM `cart` WHERE id = '$delete_id'") or die('query failed');
-   header('location:cart.php');
-}
+   $cart_id = $_GET['delete'];
+   $delete_cart_item = $conn->prepare("DELETE FROM `cart` WHERE id = ?");
+   $delete_cart_item->execute([$cart_id]);
+}  
+
 
 if(isset($_GET['delete_all'])){
-   mysqli_query($conn, "DELETE FROM `cart` WHERE user_id = '$user_id'") or die('query failed');
+   $delete_cart_item = $conn->prepare("DELETE FROM `cart` WHERE user_id = ?");
+   $delete_cart_item->execute([$user_id]);
    header('location:cart.php');
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -51,7 +52,7 @@ if(isset($_GET['delete_all'])){
 
 <div class="heading">
    <h3>shopping cart</h3>
-   <p> <a href="home.php">home</a> / cart </p>
+   <p> <a href="index.php">home</a> / cart </p>
 </div>
 
 <section class="shopping-cart">
@@ -59,23 +60,26 @@ if(isset($_GET['delete_all'])){
 
 
    <div class="box-container">
-      <?php
-         $grand_total = 0;
-         $select_cart = mysqli_query($conn, "SELECT * FROM `cart` WHERE user_id = '$user_id'") or die('query failed');
-         if(mysqli_num_rows($select_cart) > 0){
-            while($fetch_cart = mysqli_fetch_assoc($select_cart)){   
-      ?>
+   <?php
+      $grand_total = 0;
+      $select_cart = $conn->prepare("SELECT * FROM `cart` WHERE user_id = ?");
+      $select_cart->execute([$user_id]);
+      if($select_cart->rowCount() > 0){
+         while($fetch_cart = $select_cart->fetch(PDO::FETCH_ASSOC)){
+   ?>
       <div class="box">
-         <a href="cart.php?delete=<?php echo $fetch_cart['id']; ?>" class="fas fa-times" onclick="return confirm('delete this from cart?');"></a>
-         <img src="uploaded_img/<?php echo $fetch_cart['image']; ?>" alt="">
-         <div class="name"><?php echo $fetch_cart['name']; ?></div>
-         <div class="price">₱<?php echo $fetch_cart['price']; ?></div>
+
+         <a href="cart.php?delete=<?= $fetch_cart['id']; ?>" class="fas fa-times" onclick="return confirm('delete this from cart?');"></a>
+         
+         <img src="uploaded_img/<?= $fetch_cart['image']; ?>" alt="">
+         <div class="name"><?= $fetch_cart['name']; ?></div>
+         <div class="price">₱<?= $fetch_cart['price']; ?></div>
          <form action="" method="post">
-            <input type="hidden" name="cart_id" value="<?php echo $fetch_cart['id']; ?>">
-            <input type="number" min="1" name="cart_quantity" value="<?php echo $fetch_cart['quantity']; ?>">
+            <input type="hidden" name="cart_id" value="<?= $fetch_cart['id']; ?>">
+            <input type="number" min="1" name="cart_quantity" value="<?= $fetch_cart['quantity']; ?>">
             <input type="submit" name="update_cart" value="update" class="option-btn">
          </form>
-         <div class="sub-total"> sub total : <span>₱<?php echo $sub_total = ($fetch_cart['quantity'] * $fetch_cart['price']); ?></span> </div>
+         <div class="sub-total"> sub total : <span>₱<?= $sub_total = ($fetch_cart['quantity'] * $fetch_cart['price']); ?></span> </div>
       </div>
       <?php
       $grand_total += $sub_total;
@@ -87,14 +91,14 @@ if(isset($_GET['delete_all'])){
    </div>
 
    <div style="margin-top: 2rem; text-align:center;">
-      <a href="cart.php?delete_all" class="delete-btn <?php echo ($grand_total > 1)?'':'disabled'; ?>" onclick="return confirm('delete all from cart?');">delete all</a>
+      <a href="cart.php?delete_all" class="delete-btn <?= ($grand_total > 1)?'':'disabled'; ?>" onclick="return confirm('delete all from cart?');">delete all</a>
    </div>
 
    <div class="cart-total">
-      <p>grand total : <span>₱<?php echo $grand_total; ?></span></p>
+      <p>grand total : <span>₱<?= $grand_total; ?></span></p>
       <div class="flex">
          <a href="shop.php" class="option-btn">continue shopping</a>
-         <a href="checkout.php" class="btn <?php echo ($grand_total > 1)?'':'disabled'; ?>">proceed to checkout</a>
+         <a href="checkout.php" class="btn <?= ($grand_total > 1)?'':'disabled'; ?>">proceed to checkout</a>
       </div>
    </div>
 

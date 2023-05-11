@@ -8,7 +8,7 @@ if(isset($success_msg)){
 
 if(isset($success_login)){
    foreach($success_login as $success_login){
-      echo '<script>swal("'.$success_login.'", "", "success").then(function(){window.location = "home.php"});</script>';
+      echo '<script>swal("'.$success_login.'", "", "success").then(function(){window.location = "index.php"});</script>';
    }
 }
 

@@ -30,11 +30,23 @@ if(isset($message)){
          <div id="user-btn" class="fas fa-user"></div>
       </div>
 
+      <?php
+      $select_accounts = $conn->prepare("SELECT * FROM `admins`");
+      $select_accounts->execute();
+      if($select_accounts->rowCount() > 0){
+         while($fetch_accounts = $select_accounts->fetch(PDO::FETCH_ASSOC)){ 
+   ?>
+
       <div class="account-box">
-         <p>username : <span><?php echo $_SESSION['admin_name']; ?></span></p>
-         <p>email : <span><?php echo $_SESSION['admin_email']; ?></span></p>
+         <p>username : <span><?= $fetch_accounts['name']; ?></span></p>
          <a href="admin_logout.php" class="delete-btn">logout</a>
       </div>
+      <?php
+         }
+      }else{
+         echo '<p class="empty">no accounts available!</p>';
+      }
+   ?>
 
    </div>
 

@@ -42,85 +42,74 @@ if(!isset($admin_id)){
       <div class="box">
          <?php
             $total_pendings = 0;
-            $select_pending = mysqli_query($conn, "SELECT total_price FROM `orders` WHERE payment_status = 'pending'") or die('query failed');
-            if(mysqli_num_rows($select_pending) > 0){
-               while($fetch_pendings = mysqli_fetch_assoc($select_pending)){
+            $select_pending = $conn->prepare ("SELECT total_price FROM `orders` WHERE payment_status = 'pending'");
+            if(($select_pending) > 0){
+               while($fetch_pendings = ($select_pending)){
                   $total_price = $fetch_pendings['total_price'];
                   $total_pendings += $total_price;
                };
             };
          ?>
          <h3>₱<?php echo $total_pendings; ?></h3>
-         <p>total pendings</p>
+         <a href="placed_orders.php" class="btn">total pending</a>
       </div>
 
       <div class="box">
          <?php
-            $total_completed = 0;
-            $select_completed = mysqli_query($conn, "SELECT total_price FROM `orders` WHERE payment_status = 'completed'") or die('query failed');
-            if(mysqli_num_rows($select_completed) > 0){
-               while($fetch_completed = mysqli_fetch_assoc($select_completed)){
-                  $total_price = $fetch_completed['total_price'];
-                  $total_completed += $total_price;
-               };
-            };
+            $total_completes = 0;
+            $select_completes = $conn->prepare("SELECT * FROM `orders` WHERE payment_status = ?");
+            $select_completes->execute(['completed']);
+            if($select_completes->rowCount() > 0){
+               while($fetch_completes = $select_completes->fetch(PDO::FETCH_ASSOC)){
+                  $total_completes += $fetch_completes['total_price'];
+               }
+            }
          ?>
-         <h3>₱<?php echo $total_completed; ?></h3>
-         <p>completed payments</p>
+         <h3><span>₱</span><?= $total_completes; ?><span></span></h3>
+         <a href="placed_orders.php" class="btn">completed orders</a>
       </div>
 
       <div class="box">
-         <?php 
-            $select_orders = mysqli_query($conn, "SELECT * FROM `orders`") or die('query failed');
-            $number_of_orders = mysqli_num_rows($select_orders);
+         <?php
+            $select_orders = $conn->prepare("SELECT * FROM `orders`");
+            $select_orders->execute();
+            $number_of_orders = $select_orders->rowCount()
          ?>
-         <h3><?php echo $number_of_orders; ?></h3>
-         <p>order placed</p>
+         <h3><?= $number_of_orders; ?></h3>
+
+         <a href="admin_orders.php" class="btn">orders placed</a>
       </div>
 
       <div class="box">
-         <?php 
-            $select_products = mysqli_query($conn, "SELECT * FROM `products`") or die('query failed');
-            $number_of_products = mysqli_num_rows($select_products);
+         <?php
+            $select_products = $conn->prepare("SELECT * FROM `products`");
+            $select_products->execute();
+            $number_of_products = $select_products->rowCount()
          ?>
-         <h3><?php echo $number_of_products; ?></h3>
-         <p>products added</p>
+         <h3><?= $number_of_products; ?></h3>
+        
+         <a href="admin_products.php" class="btn">products added</a>
       </div>
 
       <div class="box">
-         <?php 
-            $select_users = mysqli_query($conn, "SELECT * FROM `users` WHERE user_type = 'user'") or die('query failed');
-            $number_of_users = mysqli_num_rows($select_users);
+         <?php
+            $select_users = $conn->prepare("SELECT * FROM `users`");
+            $select_users->execute();
+            $number_of_users = $select_users->rowCount()
          ?>
-         <h3><?php echo $number_of_users; ?></h3>
-         <p>normal users</p>
+         <h3><?= $number_of_users; ?></h3>
+         <a href="admin_users.php" class="btn">Users</a>
       </div>
 
-      <div class="box">
-         <?php 
-            $select_admins = mysqli_query($conn, "SELECT * FROM `users` WHERE user_type = 'admin'") or die('query failed');
-            $number_of_admins = mysqli_num_rows($select_admins);
-         ?>
-         <h3><?php echo $number_of_admins; ?></h3>
-         <p>admin users</p>
-      </div>
 
       <div class="box">
-         <?php 
-            $select_account = mysqli_query($conn, "SELECT * FROM `users`") or die('query failed');
-            $number_of_account = mysqli_num_rows($select_account);
+         <?php
+            $select_messages = $conn->prepare("SELECT * FROM `message`");
+            $select_messages->execute();
+            $number_of_messages = $select_messages->rowCount()
          ?>
-         <h3><?php echo $number_of_account; ?></h3>
-         <p>total accounts</p>
-      </div>
-
-      <div class="box">
-         <?php 
-            $select_messages = mysqli_query($conn, "SELECT * FROM `message`") or die('query failed');
-            $number_of_messages = mysqli_num_rows($select_messages);
-         ?>
-         <h3><?php echo $number_of_messages; ?></h3>
-         <p>new messages</p>
+         <h3><?= $number_of_messages; ?></h3>
+         <a href="admin_contacts.php" class="btn">new messages</a>
       </div>
 
    </div>

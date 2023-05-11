@@ -14,14 +14,14 @@ if(isset($_POST['update_order'])){
 
    $order_update_id = $_POST['order_id'];
    $update_payment = $_POST['update_payment'];
-   mysqli_query($conn, "UPDATE `orders` SET payment_status = '$update_payment' WHERE id = '$order_update_id'") or die('query failed');
+   $conn->prepare ("UPDATE `orders` SET payment_status = '$update_payment' WHERE id = '$order_update_id'");
    $success_msg[] = 'payment status has been updated!';
 
 }
 
 if(isset($_GET['delete'])){
    $delete_id = $_GET['delete'];
-   mysqli_query($conn, "DELETE FROM `orders` WHERE id = '$delete_id'") or die('query failed');
+   $conn->prepare ("DELETE FROM `orders` WHERE id = '$delete_id'");
    header('location:admin_orders.php');
 }
 
@@ -50,9 +50,9 @@ if(isset($_GET['delete'])){
 
 
    <?php
-      $select_orders = mysqli_query($conn, "SELECT * FROM `orders`") or die('query failed');
-      if(mysqli_num_rows($select_orders) > 0){
-         while($fetch_orders = mysqli_fetch_assoc($select_orders)){
+      $select_orders = $conn->prepare ("SELECT * FROM `orders`");
+      if(($select_orders) > 0){
+         while($fetch_orders =   ($select_orders)){
       ?>
 
    <div class="product-display">
@@ -108,9 +108,9 @@ if(isset($_GET['delete'])){
 <!--
    <div class="box-container">
       <?php
-      $select_orders = mysqli_query($conn, "SELECT * FROM `orders`") or die('query failed');
-      if(mysqli_num_rows($select_orders) > 0){
-         while($fetch_orders = mysqli_fetch_assoc($select_orders)){
+      $select_orders = $conn->prepare ("SELECT * FROM `orders`");
+      if(($select_orders) > 0){
+         while($fetch_orders =   ($select_orders)){
       ?>
       <div class="box">
 

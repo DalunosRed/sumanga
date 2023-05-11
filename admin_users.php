@@ -12,7 +12,7 @@ if(!isset($admin_id)){
 
 if(isset($_GET['delete'])){
    $delete_id = $_GET['delete'];
-   mysqli_query($conn, "DELETE FROM `users` WHERE id = '$delete_id'") or die('query failed');
+   $conn->prepare ("DELETE FROM `users` WHERE id = '$delete_id'");
    header('location:admin_users.php');
 }
 
@@ -37,25 +37,31 @@ if(isset($_GET['delete'])){
    
 <?php include 'admin_header.php'; ?>
 
+
 <section class="users">
 
-   <h1 class="title"> user accounts </h1>
-
    <div class="box-container">
-      <?php
-         $select_users = mysqli_query($conn, "SELECT * FROM `users`") or die('query failed');
-         while($fetch_users = mysqli_fetch_assoc($select_users)){
-      ?>
-      <div class="box">
-         <p> user id : <span><?php echo $fetch_users['id']; ?></span> </p>
-         <p> username : <span><?php echo $fetch_users['name']; ?></span> </p>
-         <p> email : <span><?php echo $fetch_users['email']; ?></span> </p>
-         <p> user type : <span style="color:<?php if($fetch_users['user_type'] == 'admin'){ echo 'var(--orange)'; } ?>"><?php echo $fetch_users['user_type']; ?></span> </p>
-         <a href="admin_users.php?delete=<?php echo $fetch_users['id']; ?>" onclick="return confirm('delete this user?');" class="delete-btn">delete user</a>
-      </div>
-      <?php
-         };
-      ?>
+
+   <?php
+      $select_accounts = $conn->prepare("SELECT * FROM `users`");
+      $select_accounts->execute();
+      if($select_accounts->rowCount() > 0){
+         while($fetch_accounts = $select_accounts->fetch(PDO::FETCH_ASSOC)){ 
+            $fullname = $fetch_accounts['last_name'].' '.$fetch_accounts['first_name'];  
+   ?>
+   <div class="box">
+      <p> user id : <span><?= $fetch_accounts['id']; ?></span> </p>
+      <p> username : <span><?= $fullname; ?></span> </p>
+      <p> email : <span><?= $fetch_accounts['email']; ?></span> </p>
+      <a href="users_accounts.php?delete=<?= $fetch_accounts['id']; ?>" onclick="return confirm('delete this account? the user related information will also be delete!')" class="delete-btn">delete</a>
+   </div>
+   <?php
+         }
+      }else{
+         echo '<p class="empty">no accounts available!</p>';
+      }
+   ?>
+
    </div>
 
 </section>

@@ -66,9 +66,9 @@ if(isset($_POST['add_to_cart'])){
    <div class="box-container">
 
       <?php  
-         $select_products = mysqli_query($conn, "SELECT * FROM `products` LIMIT 6") or die('query failed');
-         if(mysqli_num_rows($select_products) > 0){
-            while($fetch_products = mysqli_fetch_assoc($select_products)){
+         $select_products = $conn->prepare ("SELECT * FROM `products` LIMIT 6");
+         if(($select_products) > 0){
+            while($fetch_products = ($select_products)){
       ?>
      <form action="" method="post" class="box">
       <img class="image" src="uploaded_img/<?php echo $fetch_products['image']; ?>" alt="">

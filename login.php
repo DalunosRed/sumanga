@@ -10,8 +10,8 @@ if(isset($_SESSION['user_id'])){
    $user_id = '';
 };
 
+if(isset($_POST['submit'])){
 
-if(isset($_POST['login'])){
    $email = $_POST['email'];
    $email = filter_var($email, FILTER_SANITIZE_STRING);
    $pass = sha1($_POST['password']);
@@ -19,16 +19,14 @@ if(isset($_POST['login'])){
 
    $select_user = $conn->prepare("SELECT * FROM `users` WHERE email = ? AND password = ?");
    $select_user->execute([$email, $pass]);
-   $select_user->fetch(PDO::FETCH_ASSOC);
-      
+   $row = $select_user->fetch(PDO::FETCH_ASSOC);
 
    if($select_user->rowCount() > 0){
       $_SESSION['user_id'] = $row['id'];
-      header('location:index.php');
+      $success_login[] = 'Successful login!';
    }else{
-      $warning_msg[] = 'Incorrect username or password!';
+      $error_msg[] = 'incorrect username or password!';
    }
-
 
 }
 
@@ -77,7 +75,7 @@ if(isset($message)){
         <span>Password</span>
     </label>
 
-    <input type="submit" name="login" value="Login" class="submit">
+    <input type="submit" name="submit" value="Login" class="submit">
   
     <p class="signin">don't have an account? <a href="register.php">register now</a></p>
 </form>

@@ -12,18 +12,21 @@ if(!isset($user_id)){
 
 if(isset($_POST['add_to_cart'])){
 
+
    $product_name = $_POST['product_name'];
    $product_price = $_POST['product_price'];
    $product_image = $_POST['product_image'];
    $product_quantity = $_POST['product_quantity'];
 
-   $check_cart_numbers = mysqli_query($conn, "SELECT * FROM `cart` WHERE name = '$product_name' AND user_id = '$user_id'") or die('query failed');
+   $check_cart_numbers = $conn->prepare("SELECT * FROM `cart` WHERE name = '$product_name' AND user_id = '$user_id'");
 
-   if(mysqli_num_rows($check_cart_numbers) > 0){
+   if(($check_cart_numbers) > 0){
       $message[] = 'already added to cart!';
    }else{
-      mysqli_query($conn, "INSERT INTO `cart`(user_id, name, price, quantity, image) VALUES('$user_id', '$product_name', '$product_price', '$product_quantity', '$product_image')") or die('query failed');
-      $message[] = 'product added to cart!';
+   
+      $insert_products = $conn->prepare("INSERT INTO `cart`(user_id, name, price, quantity, image) VALUES (?,?,?,?,?)");
+      $insert_products->execute([$user_id, $product_name, $product_price, $product_quantity, $product_image]);  
+      $success_msg[] = 'product added to cart!';
    }
 
 }
@@ -51,7 +54,7 @@ if(isset($_POST['add_to_cart'])){
 
 <div class="heading">
    <h3>our shop</h3>
-   <p> <a href="home.php">home</a> / shop </p>
+   <p> <a href="index.php">home</a> / shop </p>
 </div>
 
 <section class="products">
@@ -59,20 +62,21 @@ if(isset($_POST['add_to_cart'])){
 
    <div class="box-container">
 
-      <?php  
-         $select_products = mysqli_query($conn, "SELECT * FROM `products`") or die('query failed');
-         if(mysqli_num_rows($select_products) > 0){
-            while($fetch_products = mysqli_fetch_assoc($select_products)){
-      ?>
+   <?php
+      $select_products = $conn->prepare("SELECT * FROM `products`");
+      $select_products->execute();
+      if($select_products->rowCount() > 0){
+         while($fetch_products = $select_products->fetch(PDO::FETCH_ASSOC)){ 
+   ?>
      <form action="" method="post" class="box">
-      <img class="image" src="uploaded_img/<?php echo $fetch_products['image']; ?>" alt="">
-      <div class="name"><?php echo $fetch_products['name']; ?></div>
-      <div class="name"><?php echo $fetch_products['category']; ?></div>
-      <div class="price">₱<?php echo $fetch_products['price']; ?></div>
+      <img class="image" src="uploaded_img/<?= $fetch_products['image']; ?>" height="100" alt="">
+      <div class="name"><?= $fetch_products['name']; ?></div>
+      <div class="name"><?= $fetch_products['category']; ?></div>
+      <div class="price">₱<?= $fetch_products['price']; ?></div>
       <input type="number" min="1" name="product_quantity" value="1" class="qty">
-      <input type="hidden" name="product_name" value="<?php echo $fetch_products['name']; ?>">
-      <input type="hidden" name="product_price" value="<?php echo $fetch_products['price']; ?>">
-      <input type="hidden" name="product_image" value="<?php echo $fetch_products['image']; ?>">
+      <input type="hidden" name="product_name" value="<?= $fetch_products['name']; ?>">
+      <input type="hidden" name="product_price" value="<?= $fetch_products['price']; ?>">
+      <input type="hidden" name="product_image" value="<?= $fetch_products['image']; ?>">
       <input type="submit" value="add to cart" name="add_to_cart" class="btn">
      </form>
       <?php

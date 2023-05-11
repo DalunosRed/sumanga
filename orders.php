@@ -33,7 +33,7 @@ if(!isset($user_id)){
 
 <div class="heading">
    <h3>your orders</h3>
-   <p> <a href="home.php">home</a> / orders </p>
+   <p> <a href="index.php">home</a> / orders </p>
 </div>
 
 <section class="placed-orders">
@@ -41,9 +41,9 @@ if(!isset($user_id)){
    <div class="box-container">
 
       <?php
-         $order_query = mysqli_query($conn, "SELECT * FROM `orders` WHERE user_id = '$user_id'") or die('query failed');
-         if(mysqli_num_rows($order_query) > 0){
-            while($fetch_orders = mysqli_fetch_assoc($order_query)){
+         $order_query = $conn->prepare("SELECT * FROM `orders` WHERE user_id = '$user_id'");
+         if(($order_query) > 0){
+            while($fetch_orders = ($order_query)){
       ?>
       <div class="box">
          <p> placed on : <span><?php echo $fetch_orders['placed_on']; ?></span> </p>

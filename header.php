@@ -15,10 +15,10 @@ if(isset($message)){
 
    <div class="header-2">
       <div class="flex">
-         <a href="home.php" class="logo">SUMANGA JUNKSHOP.</a>
+         <a href="index.php" class="logo">SUMANGA JUNKSHOP.</a>
 
          <nav class="navbar">
-            <a href="home.php">home</a>
+            <a href="index.php">home</a>
             <a href="about.php">about</a>
             <a href="shop.php">shop</a>
             <a href="contact.php">contact</a>
@@ -29,18 +29,32 @@ if(isset($message)){
             <div id="menu-btn" class="fas fa-bars"></div>
             <div id="user-btn" class="fas fa-user"></div>
             <?php
-               $select_cart_number = mysqli_query($conn, "SELECT * FROM `cart` WHERE user_id = '$user_id'") or die('query failed');
-               $cart_rows_number = mysqli_num_rows($select_cart_number); 
+                $count_cart_items = $conn->prepare("SELECT * FROM `cart` WHERE user_id = ?");
+                $count_cart_items->execute([$user_id]);
+                $total_cart_counts = $count_cart_items->rowCount();
             ?>
-            <a href="cart.php"> <i class="fas fa-shopping-cart"></i> <span>(<?php echo $cart_rows_number; ?>)</span> </a>
+            <a href="cart.php"> <i class="fas fa-shopping-cart"></i> <span>(<?php echo $total_cart_counts; ?>)</span> </a>
          </div>
 
          <div class="user-box">
-            <p>username : <span><?php echo $_SESSION['user_name']; ?></span></p>
-            <p>email : <span><?php echo $_SESSION['user_email']; ?></span></p>
+         <?php          
+            $select_profile = $conn->prepare("SELECT * FROM `users` WHERE id = ?");
+            $select_profile->execute([$user_id]);
+            if($select_profile->rowCount() > 0){
+            $fetch_profile = $select_profile->fetch(PDO::FETCH_ASSOC);
+         ?>
+         <p><?= $fetch_profile["first_name"]; ?></p>
+         <a href="update_user.php" class="btn">update profile</a>
             <a href="logout.php" class="delete-btn">logout</a>
+
+            <?php
+            }else{
+         ?>
          </div>
       </div>
+      <?php
+            }
+         ?>   
    </div>
 
 </header>
