@@ -18,9 +18,21 @@ if(isset($success_reg)){
    }
 }
 
+if(isset($success_add)){
+   foreach($success_add as $success_add){
+      echo '<script>swal("'.$success_add.'", "", "success").then(function(){window.location = "cart.php"});</script>';
+   }
+}
+
 if(isset($success_admin)){
    foreach($success_admin as $success_admin){
       echo '<script>swal("'.$success_admin.'", "", "success").then(function(){window.location = "admin_page.php"});</script>';
+   }
+}
+
+if(isset($warning_msg)){
+   foreach($warning_msg as $warning_msg){
+      echo '<script>swal("'.$warning_msg.'", "", "success").then(function(){window.location = "admin_contacts.php"});</script>';
    }
 }
 

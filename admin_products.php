@@ -164,25 +164,24 @@ if(isset($_POST['update_product'])){
 <!-- show products  -->
 
 <section class="show-products">
-      
-<?php
+   <div class="product-display">
+      <table class="product-display-table">
+         
+         <tr>
+            <th >product image</th>
+            <th>product name</th>
+            <th>product category</th>
+            <th>product price</th>
+            <th>action</th>
+         </tr>
+         
+         <?php
       $select_products = $conn->prepare("SELECT * FROM `products`");
       $select_products->execute();
       if($select_products->rowCount() > 0){
          while($fetch_products = $select_products->fetch(PDO::FETCH_ASSOC)){ 
-   ?>
+            ?>
       
-<div class="product-display">
-   <table class="product-display-table">
-      <thead>
-      <tr>
-         <th>product image</th>
-         <th>product name</th>
-         <th>product category</th>
-         <th>product price</th>
-         <th>action</th>
-      </tr>
-      </thead>
       <tr>
          <td><img src="uploaded_img/<?php echo $fetch_products['image']; ?>" height="100" alt=""></td>
          <td><?php echo $fetch_products['name']; ?></td>
@@ -193,14 +192,14 @@ if(isset($_POST['update_product'])){
            <a href="admin_products.php?delete=<?php echo $fetch_products['id']; ?>" class="delete-btn" onclick="return confirm('delete this product?');">delete</a>
          </td>
       </tr>
-   </table>
-</div>
 <?php
          }
       }else{
          echo '<p class="empty">no products added yet!</p>';
       }
       ?>
+   </table>
+</div>
 
 
 </section>

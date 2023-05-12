@@ -10,17 +10,25 @@ if(!isset($user_id)){
    header('location:login.php');
 }
 
-if(isset($_POST['order_btn'])){
+if(isset($_POST['order'])){
 
-   $name = mysqli_real_escape_string($conn, $_POST['name']);
+   $name = $_POST['name'];
+   $name = filter_var($name, FILTER_SANITIZE_STRING);
    $number = $_POST['number'];
-   $email = mysqli_real_escape_string($conn, $_POST['email']);
-   $method = mysqli_real_escape_string($conn, $_POST['method']);
-   $address = mysqli_real_escape_string($conn,  $_POST['street'].', '. $_POST['city'].', - '. $_POST['pin_code']);
+   $number = filter_var($number, FILTER_SANITIZE_STRING);
+   $email = $_POST['email'];
+   $email = filter_var($email, FILTER_SANITIZE_STRING);
+   $method = $_POST['method'];
+   $method = filter_var($method, FILTER_SANITIZE_STRING);
+   $address = $_POST['street'].', '. $_POST['city'].', - '. $_POST['pin_code'];
+   $address = filter_var($address, FILTER_SANITIZE_STRING);
    $placed_on = date('d-M-Y');
-
+  
    $cart_total = 0;
    $cart_products[] = '';
+
+   $check_cart = $conn->prepare("SELECT * FROM `cart` WHERE user_id = ?");
+   $check_cart->execute([$user_id]);
 
    $cart_query = $conn->prepare("SELECT * FROM `cart` WHERE user_id = '$user_id'");
    if(($cart_query) > 0){
@@ -33,19 +41,17 @@ if(isset($_POST['order_btn'])){
 
    $total_products = implode(', ',$cart_products);
 
-   $order_query = mysqli_query($conn, "SELECT * FROM `orders` WHERE name = '$name' AND number = '$number' AND email = '$email' AND method = '$method' AND address = '$address' AND total_products = '$total_products' AND total_price = '$cart_total'");
+   $order_query = $conn->prepare("SELECT * FROM `orders` WHERE name = '$name' AND number = '$number' AND email = '$email' AND method = '$method' AND address = '$address' AND total_products = '$total_products' AND total_price = '$cart_total'");
 
-   if($cart_total == 0){
-      $message[] = 'your cart is empty';
-   }else{
       if(($order_query) > 0){
          $message[] = 'order already placed!'; 
       }else{
-         mysqli_query($conn, "INSERT INTO `orders`(user_id, name, number, email, method, address, total_products, total_price, placed_on) VALUES('$user_id', '$name', '$number', '$email', '$method', '$address', '$total_products', '$cart_total', '$placed_on')");
+         $insert_order = $conn->prepare("INSERT INTO `orders`(user_id, name, number, email, method, address, total_products, total_price,placed_on) VALUES(?,?,?,?,?,?,?,?,?)");
+         $insert_order->execute([$user_id, $name, $number, $email, $method, $address, $total_products, $cart_total,$placed_on]);
+         $delete_cart = $conn->prepare("DELETE FROM `cart` WHERE user_id = ?");
+         $delete_cart->execute([$user_id]);
          $message[] = 'order placed successfully!';
-         mysqli_query($conn, "DELETE FROM `cart` WHERE user_id = '$user_id'");
       }
-   }
    
 }
 
@@ -77,22 +83,32 @@ if(isset($_POST['order_btn'])){
 
 <section class="display-order">
 
-   <?php  
-      $grand_total = 0;
-      $select_cart = $conn->prepare("SELECT * FROM `cart` WHERE user_id = '$user_id'");
-      if(($select_cart) > 0){
-         while($fetch_cart = ($select_cart)){
-            $total_price = ($fetch_cart['price'] * $fetch_cart['quantity']);
-            $grand_total += $total_price;
-   ?>
-   <p> <?php echo $fetch_cart['name']; ?> <span>(<?php echo '₱'.$fetch_cart['price'].' x '. $fetch_cart['quantity']; ?>)</span> </p>
-   <?php
-      }
-   }else{
-      echo '<p class="empty">your cart is empty</p>';
-   }
-   ?>
-   <div class="grand-total"> grand total : <span>₱<?php echo $grand_total; ?></span> </div>
+
+
+
+   <div class="display-orders">
+      <?php
+         $grand_total = 0;
+         $cart_items[] = '';
+         $select_cart = $conn->prepare("SELECT * FROM `cart` WHERE user_id = ?");
+         $select_cart->execute([$user_id]);
+         if($select_cart->rowCount() > 0){
+            while($fetch_cart = $select_cart->fetch(PDO::FETCH_ASSOC)){
+               $cart_items[] = $fetch_cart['name'].' ('.$fetch_cart['price'].' x '. $fetch_cart['quantity'].') - ';
+               $total_products = implode($cart_items);
+               $grand_total += ($fetch_cart['price'] * $fetch_cart['quantity']);
+      ?>
+         <p> <?= $fetch_cart['name']; ?> <span>(<?= '₱'.$fetch_cart['price'].'/- x '. $fetch_cart['quantity']; ?>)</span> </p>
+      <?php
+            }
+         }else{
+            echo '<p class="empty">your cart is empty!</p>';
+         }
+      ?>
+         <input type="hidden" name="total_products" value="<?= $total_products; ?>">
+         <input type="hidden" name="total_price" value="<?= $grand_total; ?>" value="">
+         <div class="grand-total"> grand total : <span>₱<?php echo $grand_total; ?></span> </div>      
+      </div>
 
 </section>
 
@@ -117,7 +133,7 @@ if(isset($_POST['order_btn'])){
             <span>payment method :</span>
             <select name="method">
                <option value="cash on delivery">cash on delivery</option>
-               <option value="gcash card">Gcash</option>
+               <option value="gcash">Gcash</option>
             </select>
          </div>
          <div class="inputBox">
@@ -133,7 +149,7 @@ if(isset($_POST['order_btn'])){
             <input type="number" min="0" name="pin_code" required placeholder="e.g. 2200">
          </div>
       </div>
-      <input type="submit" value="order now" class="btn" name="order_btn">
+      <input type="submit" value="order now" class="btn" name="order">
    </form>
 
 </section>

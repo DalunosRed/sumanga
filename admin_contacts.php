@@ -12,8 +12,9 @@ if(!isset($admin_id)){
 
 if(isset($_GET['delete'])){
    $delete_id = $_GET['delete'];
-   $conn->prepare ("DELETE FROM `message` WHERE id = '$delete_id'") or die('query failed')
-   $warning_msg[] = 'incorrect username or password!';
+   $delete_message = $conn->prepare("DELETE FROM `messages` WHERE id = ?");
+   $delete_message->execute([$delete_id]);
+   header('location:admins_contact.php');
 }
 
 ?>
@@ -49,11 +50,11 @@ if(isset($_GET['delete'])){
       
    ?>
    <div class="box">
-      <p> user id : <span><?php echo $fetch_message['user_id']; ?></span> </p>
-      <p> name : <span><?php echo $fetch_message['name']; ?></span> </p>
-      <p> number : <span><?php echo $fetch_message['number']; ?></span> </p>
-      <p> email : <span><?php echo $fetch_message['email']; ?></span> </p>
-      <p> message : <span><?php echo $fetch_message['message']; ?></span> </p>
+   <p> user id : <span><?= $fetch_message['user_id']; ?></span></p>
+   <p> name : <span><?= $fetch_message['name']; ?></span></p>
+   <p> email : <span><?= $fetch_message['email']; ?></span></p>
+   <p> number : <span><?= $fetch_message['number']; ?></span></p>
+   <p> message : <span><?= $fetch_message['message']; ?></span></p>
       <a href="admin_contacts.php?delete=<?php echo $fetch_message['id']; ?>" onclick="return confirm('delete this message?');" class="delete-btn">delete message</a>
    </div>
    <?php

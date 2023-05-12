@@ -66,7 +66,7 @@ if(!isset($admin_id)){
             }
          ?>
          <h3><span>₱</span><?= $total_completes; ?><span></span></h3>
-         <a href="placed_orders.php" class="btn">completed orders</a>
+         <a href="admin_orders.php" class="btn">completed orders</a>
       </div>
 
       <div class="box">

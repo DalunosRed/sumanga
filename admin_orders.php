@@ -14,15 +14,17 @@ if(isset($_POST['update_order'])){
 
    $order_update_id = $_POST['order_id'];
    $update_payment = $_POST['update_payment'];
-   $conn->prepare ("UPDATE `orders` SET payment_status = '$update_payment' WHERE id = '$order_update_id'");
+   $update_status = $conn->prepare ("UPDATE `orders` SET payment_status = ? WHERE id = ?");
+   $update_status->execute([$update_payment,$order_update_id]);
    $success_msg[] = 'payment status has been updated!';
 
 }
 
 if(isset($_GET['delete'])){
    $delete_id = $_GET['delete'];
-   $conn->prepare ("DELETE FROM `orders` WHERE id = '$delete_id'");
-   header('location:admin_orders.php');
+   $delete_order = $conn->prepare("DELETE FROM `orders` WHERE id = ?");
+   $delete_order->execute([$delete_id]);
+   $success_msg[] = 'Order has been deleted!';
 }
 
 ?>
@@ -44,20 +46,12 @@ if(isset($_GET['delete'])){
 </head>
 <body>
    
-<?php include 'admin_header.php'; ?>
+<?= include 'admin_header.php'; ?>
 
 <section class="orders">
 
-
-   <?php
-      $select_orders = $conn->prepare ("SELECT * FROM `orders`");
-      if(($select_orders) > 0){
-         while($fetch_orders =   ($select_orders)){
-      ?>
-
    <div class="product-display">
       <table class="product-display-table">
-         <thead>
          <tr>
             <th>User id</th>
             <th>Placed on</th>
@@ -72,84 +66,50 @@ if(isset($_GET['delete'])){
             <th>action</th>
             
          </tr>
+<?php
+      $select_orders = $conn->prepare("SELECT * FROM `orders`");
+      $select_orders->execute();
+      if($select_orders->rowCount() > 0){
+         while($fetch_orders = $select_orders->fetch(PDO::FETCH_ASSOC)){
+   ?>
          </thead>
+         <tbody>
          <tr>
-         <td><?php echo $fetch_orders['user_id']; ?></td>
-         <td><?php echo $fetch_orders['placed_on']; ?></td>
-         <td><?php echo $fetch_orders['name']; ?></td>
-         <td><?php echo $fetch_orders['number']; ?></td>
-         <td><?php echo $fetch_orders['email']; ?></td>
-         <td><?php echo $fetch_orders['address']; ?></td>
-         <td><?php echo $fetch_orders['total_products']; ?></td>
-         <td><?php echo $fetch_orders['total_price']; ?></td>
-         <td><?php echo $fetch_orders['method']; ?></td>
+         <td><?= $fetch_orders['user_id']; ?></td>
+         <td><?= $fetch_orders['placed_on']; ?></td>
+         <td><?= $fetch_orders['name']; ?></td>
+         <td><?= $fetch_orders['number']; ?></td>
+         <td><?= $fetch_orders['email']; ?></td>
+         <td><?= $fetch_orders['address']; ?></td>
+         <td><?= $fetch_orders['total_products']; ?></td>
+         <td><?= $fetch_orders['total_price']; ?></td>
+         <td><?= $fetch_orders['method']; ?></td>
          <form action="" method="post">
-         <td><input type="hidden" name="order_id" value="<?php echo $fetch_orders['id']; ?>">
+         <td><input type="hidden" name="order_id" value="<?= $fetch_orders['id']; ?>">
             <select name="update_payment">
-               <option value="" selected disabled><?php echo $fetch_orders['payment_status']; ?></option>
+               <option value="" selected disabled><?= $fetch_orders['payment_status']; ?></option>
                <option value="pending">pending</option>
                <option value="completed">completed</option>
             </select>
          </td>
          <td>
             <input type="submit" value="update" name="update_order" class="option-btn">
-            <a href="admin_orders.php?delete=<?php echo $fetch_orders['id']; ?>" onclick="return confirm('delete this order?');" class="delete-btn">delete</a>
+            <a href="admin_orders.php?delete=<?= $fetch_orders['id']; ?>" onclick="return confirm('delete this order?');" class="delete-btn">delete</a>
          </td>
          </form>
          </tr>
-      </table>
-   </div>
-   <?php
+      <?php
          }
       }else{
-         echo '<p class="empty">no orders placed yet!</p>';
+         '<p class="empty">no orders placed yet!</p>';
       }
       ?>
-<!--
-   <div class="box-container">
-      <?php
-      $select_orders = $conn->prepare ("SELECT * FROM `orders`");
-      if(($select_orders) > 0){
-         while($fetch_orders =   ($select_orders)){
-      ?>
-      <div class="box">
+         </tbody>
+      </table>
+         </div>
 
-
-
-
-
-
-
-      
-         <p> user id : <span><?php echo $fetch_orders['user_id']; ?></span> </p>
-         <p> placed on : <span><?php echo $fetch_orders['placed_on']; ?></span> </p>
-         <p> name : <span><?php echo $fetch_orders['name']; ?></span> </p>
-         <p> number : <span><?php echo $fetch_orders['number']; ?></span> </p>
-         <p> email : <span><?php echo $fetch_orders['email']; ?></span> </p>
-         <p> address : <span><?php echo $fetch_orders['address']; ?></span> </p>
-         <p> total products : <span><?php echo $fetch_orders['total_products']; ?></span> </p>
-         <p> total price : <span>₱<?php echo $fetch_orders['total_price']; ?></span> </p>
-         <p> payment method : <span><?php echo $fetch_orders['method']; ?></span> </p>
-         <form action="" method="post">
-            <input type="hidden" name="order_id" value="<?php echo $fetch_orders['id']; ?>">
-            <select name="update_payment">
-               <option value="" selected disabled><?php echo $fetch_orders['payment_status']; ?></option>
-               <option value="pending">pending</option>
-               <option value="completed">completed</option>
-            </select>
-            <input type="submit" value="update" name="update_order" class="option-btn">
-            <a href="admin_orders.php?delete=<?php echo $fetch_orders['id']; ?>" onclick="return confirm('delete this order?');" class="delete-btn">delete</a>
-         </form>
       </div>
 
-         -->
-      <?php
-         }
-      }else{
-         echo '<p class="empty">no orders placed yet!</p>';
-      }
-      ?>
-   </div>
 
 </section>
 
@@ -165,7 +125,7 @@ if(isset($_GET['delete'])){
 <!-- custom admin js file link  -->
 <script src="js/admin_script.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
-<?php include 'alers.php' ?>
+<?= include 'alers.php' ?>
 
 </body>
 </html>

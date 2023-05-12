@@ -26,7 +26,7 @@ if(isset($_POST['add_to_cart'])){
    
       $insert_products = $conn->prepare("INSERT INTO `cart`(user_id, name, price, quantity, image) VALUES (?,?,?,?,?)");
       $insert_products->execute([$user_id, $product_name, $product_price, $product_quantity, $product_image]);  
-      $success_msg[] = 'product added to cart!';
+      $success_add[] = 'product added to cart!';
    }
 
 }
@@ -100,6 +100,8 @@ if(isset($_POST['add_to_cart'])){
 
 <!-- custom js file link  -->
 <script src="js/script.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+<?php include 'alers.php' ?>
 
 </body>
 </html>
