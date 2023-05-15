@@ -2,7 +2,7 @@
 
 :root{
    --purple:#8e44ad;
-   --red:#c0392b;
+   --red:#cc493b;
    --blue: #002B5B;
    --orange:#f39c12;
    --black:#333;
@@ -14,8 +14,45 @@
    --box-shadow:0 .5rem 1rem rgba(0,0,0,.1);
 }
 
+.product-display{
+   margin:2rem 0;
+}
+.product-display .product-display-table{
+   width: 100%;
+   text-align: center;
+}
+
+.product-display .product-display-table thead{
+   background: var(--bg-color);
+}
+
+.product-display .product-display-table th{
+   padding:1rem;
+   font-size: 2rem;
+}
+
+
+.product-display .product-display-table td{
+   padding:1rem;
+   font-size: 2rem;
+   border-bottom: var(--border);
+}
+
+.product-display .product-display-table .btn:first-child{
+   margin-top: 0;
+}
+
+.product-display .product-display-table .btn:last-child{
+   background: crimson;
+}
+
+.product-display .product-display-table .btn:last-child:hover{
+   background: var(--black);
+}
+
+
 *{
-   font-family: 'Rockwell', sans-serif;
+   font-family: 'cursive', sans-serif;
    margin:0; padding:0;
    box-sizing: border-box;
    outline: none; border:none;
@@ -347,37 +384,7 @@ section{
    color:var(--black);
 }
 
-.heading{
-   min-height: 30vh;
-   display: flex;
-   flex-flow: column;
-   align-items: center;
-   justify-content: center;
-   gap:1rem;
-   background: url(../images/heading-bg.webp) no-repeat;
-   background-size: cover;
-   background-position: center;
-   text-align: center;
-}
 
-.heading h3{
-   font-size: 5rem;
-   color:var(--black);
-   text-transform: uppercase;
-}
-
-.heading p{
-   font-size: 2.5rem;
-   color:var(--light-color);
-}
-
-.heading p a{
-   color:var(--blue);
-}
-
-.heading p a:hover{
-   text-decoration: underline;
-}
 
 @keyframes fadeIn {
    0%{
@@ -606,7 +613,7 @@ section{
 }
 
 .products .box-container .box .image{
-   height: 30rem;
+   height: 20rem;
 }
 
 .products .box-container .box .name{
@@ -878,7 +885,7 @@ section{
 }
 
 .shopping-cart .box-container .box img{
-   height: 30rem;
+   height: 20rem;
 }
 
 .shopping-cart .box-container .box .name{
@@ -1186,9 +1193,7 @@ section{
       font-size: 50%;
    }
 
-   .heading h3{
-      font-size: 3.5rem;
-   }
+ 
 
    .title{
       font-size: 3rem;

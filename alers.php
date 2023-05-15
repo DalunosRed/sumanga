@@ -18,6 +18,12 @@ if(isset($success_reg)){
    }
 }
 
+if(isset($success_ord)){
+   foreach($success_ord as $success_ord){
+      echo '<script>swal("'.$success_ord.'", "", "success").then(function(){window.location = "orders.php"});</script>';
+   }
+}
+
 if(isset($success_add)){
    foreach($success_add as $success_add){
       echo '<script>swal("'.$success_add.'", "", "success").then(function(){window.location = "cart.php"});</script>';

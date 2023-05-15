@@ -43,12 +43,15 @@ if(isset($_GET['delete'])){
    <h1 class="title"> messages </h1>
 
    <div class="box-container">
+
    <?php
-      $select_message = $conn->prepare ("SELECT * FROM `message`");
-      if(($select_message) > 0){
-         while($fetch_message = ($select_message)){
-      
+      $select_messages = $conn->prepare("SELECT * FROM `message`");
+      $select_messages->execute();
+      if($select_messages->rowCount() > 0){
+         while($fetch_message = $select_messages->fetch(PDO::FETCH_ASSOC)){
    ?>
+
+   
    <div class="box">
    <p> user id : <span><?= $fetch_message['user_id']; ?></span></p>
    <p> name : <span><?= $fetch_message['name']; ?></span></p>

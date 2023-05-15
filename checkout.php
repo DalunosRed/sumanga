@@ -12,6 +12,9 @@ if(!isset($user_id)){
 
 if(isset($_POST['order'])){
 
+
+   
+
    $name = $_POST['name'];
    $name = filter_var($name, FILTER_SANITIZE_STRING);
    $number = $_POST['number'];
@@ -50,7 +53,7 @@ if(isset($_POST['order'])){
          $insert_order->execute([$user_id, $name, $number, $email, $method, $address, $total_products, $cart_total,$placed_on]);
          $delete_cart = $conn->prepare("DELETE FROM `cart` WHERE user_id = ?");
          $delete_cart->execute([$user_id]);
-         $message[] = 'order placed successfully!';
+         $success_ord[] = 'order placed successfully!';
       }
    
 }
@@ -76,10 +79,7 @@ if(isset($_POST['order'])){
    
 <?php include 'header.php'; ?>
 
-<div class="heading">
-   <h3>checkout</h3>
-   <p> <a href="index.php">home</a> / checkout </p>
-</div>
+
 
 <section class="display-order">
 
@@ -166,6 +166,8 @@ if(isset($_POST['order'])){
 
 <!-- custom js file link  -->
 <script src="js/script.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+<?php include 'alers.php' ?>
 
 </body>
 </html>

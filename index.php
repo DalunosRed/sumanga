@@ -60,40 +60,6 @@ if(isset($_POST['add_to_cart'])){
 
 </section>
 
-<section class="products">
-
-
-   <div class="box-container">
-
-      <?php  
-         $select_products = $conn->prepare ("SELECT * FROM `products` LIMIT 6");
-         if(($select_products) > 0){
-            while($fetch_products = ($select_products)){
-      ?>
-     <form action="" method="post" class="box">
-      <img class="image" src="uploaded_img/<?php echo $fetch_products['image']; ?>" alt="">
-      <div class="name"><?php echo $fetch_products['name']; ?></div>
-      <div class="price">₱<?php echo $fetch_products['price']; ?></div>
-      <input type="number" min="1" name="product_quantity" value="1" class="qty">
-      <input type="hidden" name="product_name" value="<?php echo $fetch_products['name']; ?>">
-      <input type="hidden" name="product_price" value="<?php echo $fetch_products['price']; ?>">
-      <input type="hidden" name="product_image" value="<?php echo $fetch_products['image']; ?>">
-      <input type="submit" value="add to cart" name="add_to_cart" class="btn">
-     </form>
-      <?php
-         }
-      }else{
-         echo '<p class="empty">no products added yet!</p>';
-      }
-      ?>
-   </div>
-
-   <div class="load-more" style="margin-top: 2rem; text-align:center">
-      <a href="shop.php" class="option-btn">load more</a>
-   </div>
-
-</section>
-
 <section class="home-contact">
 
    <div class="content">

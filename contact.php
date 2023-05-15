@@ -22,11 +22,34 @@ if(isset($_POST['send'])){
    if(($select_message) > 0){
       $message[] = 'message sent already!';
    }else{
-      $conn->prepare("INSERT INTO `message`(user_id, name, email, number, message) VALUES('$user_id', '$name', '$email', '$number', '$msg')");
+      $select_message = $conn->prepare("INSERT INTO `message`(user_id, name, email, number, message) VALUES(?,?,?,?,?)");
+      $select_message->execute([$user_id, $name, $email, $number, $msg]);
       $message[] = 'message sent successfully!';
    }
 
 }
+
+// if(isset($_POST['send'])){
+
+//    $name = $_POST['name'];
+//    $name = filter_var($name, FILTER_SANITIZE_STRING);
+//    $email = $_POST['email'];
+//    $email = filter_var($email, FILTER_SANITIZE_STRING);
+//    $number = $_POST['number'];
+//    $number = filter_var($number, FILTER_SANITIZE_STRING);
+//    $msg = $_POST['message'];
+//    $msg = filter_var($msg, FILTER_SANITIZE_STRING);
+
+  
+
+//       $insert_message = $conn->prepare("INSERT INTO `messages`(user_id, name, email, number, message) VALUES(?,?,?,?,?)");
+//       $insert_message->execute([$user_id, $name, $email, $number, $msg]);
+
+//       $message[] = 'sent message successfully!';
+
+   
+
+// }
 
 ?>
 
@@ -49,10 +72,7 @@ if(isset($_POST['send'])){
    
 <?php include 'header.php'; ?>
 
-<div class="heading">
-   <h3>contact us</h3>
-   <p> <a href="index.php">home</a> / contact </p>
-</div>
+
 
 <section class="contact">
 

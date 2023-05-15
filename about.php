@@ -31,17 +31,14 @@ if(!isset($user_id)){
    
 <?php include 'header.php'; ?>
 
-<div class="heading">
-   <h3>about us</h3>
-   <p> <a href="index.php">home</a> / about </p>
-</div>
+
 
 <section class="about">
 
    <div class="flex">
 
       <div class="image">
-         <img src="images/about-img.jpg" alt="">
+         <img src="images/about-img.png" alt="">
       </div>
 
       <div class="content">
@@ -57,7 +54,6 @@ if(!isset($user_id)){
 
 <section class="reviews">
 
-   <h1 class="title">client's reviews</h1>
 
    <div class="box-container">
 

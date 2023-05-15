@@ -10,11 +10,20 @@ if(!isset($user_id)){
    header('location:login.php');
 }
 
+// if(isset($_POST['update_cart'])){
+//    $cart_id = $_POST['cart_id'];
+//    $cart_quantity = $_POST['cart_quantity'];
+//    $conn->prepare("UPDATE `cart` SET quantity = '$cart_quantity' WHERE id = '$cart_id'");
+//    $message[] = 'cart quantity updated!';
+// }
+
 if(isset($_POST['update_cart'])){
    $cart_id = $_POST['cart_id'];
    $cart_quantity = $_POST['cart_quantity'];
-   $conn->prepare("UPDATE `cart` SET quantity = '$cart_quantity' WHERE id = '$cart_id'");
-   $message[] = 'cart quantity updated!';
+   $cart_quantity = filter_var($cart_quantity, FILTER_SANITIZE_STRING);
+   $update_qty = $conn->prepare("UPDATE `cart` SET quantity = ? WHERE id = ?");
+   $update_qty->execute([$cart_quantity, $cart_id]);
+   $message[] = 'cart quantity updated';
 }
 
 if(isset($_GET['delete'])){
@@ -50,10 +59,7 @@ if(isset($_GET['delete_all'])){
    
 <?php include 'header.php'; ?>
 
-<div class="heading">
-   <h3>shopping cart</h3>
-   <p> <a href="index.php">home</a> / cart </p>
-</div>
+
 
 <section class="shopping-cart">
 
