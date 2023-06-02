@@ -10,10 +10,9 @@ if(!isset($user_id)){
    header('location:login.php');
 }
 
+
+
 if(isset($_POST['order'])){
-
-
-   
 
    $name = $_POST['name'];
    $name = filter_var($name, FILTER_SANITIZE_STRING);
@@ -25,39 +24,27 @@ if(isset($_POST['order'])){
    $method = filter_var($method, FILTER_SANITIZE_STRING);
    $address = $_POST['street'].', '. $_POST['city'].', - '. $_POST['pin_code'];
    $address = filter_var($address, FILTER_SANITIZE_STRING);
+   $total_products = $_POST['total_products'];
+   $total_price = $_POST['total_price'];
    $placed_on = date('d-M-Y');
-  
-   $cart_total = 0;
-   $cart_products[] = '';
 
    $check_cart = $conn->prepare("SELECT * FROM `cart` WHERE user_id = ?");
    $check_cart->execute([$user_id]);
 
-   $cart_query = $conn->prepare("SELECT * FROM `cart` WHERE user_id = '$user_id'");
-   if(($cart_query) > 0){
-      while($cart_item = ($cart_query)){
-         $cart_products[] = $cart_item['name'].' ('.$cart_item['quantity'].') ';
-         $sub_total = ($cart_item['price'] * $cart_item['quantity']);
-         $cart_total += $sub_total;
-      }
+   if($check_cart->rowCount() > 0){
+
+      $insert_order = $conn->prepare("INSERT INTO `orders`(user_id, name, number, email, method, address, total_products, total_price, placed_on) VALUES(?,?,?,?,?,?,?,?,?)");
+      $insert_order->execute([$user_id, $name, $number, $email, $method, $address, $total_products, $total_price, $placed_on]);
+
+      $delete_cart = $conn->prepare("DELETE FROM `cart` WHERE user_id = ?");
+      $delete_cart->execute([$user_id]);
+
+      $success_ord[] = 'order placed successfully!';
+   }else{
+      $message[] = 'your cart is empty';
    }
 
-   $total_products = implode(', ',$cart_products);
-
-   $order_query = $conn->prepare("SELECT * FROM `orders` WHERE name = '$name' AND number = '$number' AND email = '$email' AND method = '$method' AND address = '$address' AND total_products = '$total_products' AND total_price = '$cart_total'");
-
-      if(($order_query) > 0){
-         $message[] = 'order already placed!'; 
-      }else{
-         $insert_order = $conn->prepare("INSERT INTO `orders`(user_id, name, number, email, method, address, total_products, total_price,placed_on) VALUES(?,?,?,?,?,?,?,?,?)");
-         $insert_order->execute([$user_id, $name, $number, $email, $method, $address, $total_products, $cart_total,$placed_on]);
-         $delete_cart = $conn->prepare("DELETE FROM `cart` WHERE user_id = ?");
-         $delete_cart->execute([$user_id]);
-         $success_ord[] = 'order placed successfully!';
-      }
-   
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -81,12 +68,13 @@ if(isset($_POST['order'])){
 
 
 
-<section class="display-order">
+<section class="checkout">
 
+   <form action="" method="POST">
 
-
-
-   <div class="display-orders">
+   <h3>your orders</h3>
+   <section class="display-order">
+      <div class="display-orders">
       <?php
          $grand_total = 0;
          $cart_items[] = '';
@@ -98,7 +86,7 @@ if(isset($_POST['order'])){
                $total_products = implode($cart_items);
                $grand_total += ($fetch_cart['price'] * $fetch_cart['quantity']);
       ?>
-         <p> <?= $fetch_cart['name']; ?> <span>(<?= '₱'.$fetch_cart['price'].'/- x '. $fetch_cart['quantity']; ?>)</span> </p>
+         <p> <?= $fetch_cart['name']; ?> <span>(<?= '$'.$fetch_cart['price'].'/- x '. $fetch_cart['quantity']; ?>)</span> </p>
       <?php
             }
          }else{
@@ -107,27 +95,24 @@ if(isset($_POST['order'])){
       ?>
          <input type="hidden" name="total_products" value="<?= $total_products; ?>">
          <input type="hidden" name="total_price" value="<?= $grand_total; ?>" value="">
-         <div class="grand-total"> grand total : <span>₱<?php echo $grand_total; ?></span> </div>      
+         <div class="grand-total">grand total : <span>$<?= $grand_total; ?>/-</span></div>
       </div>
+   </section>
 
-</section>
+      <h3>place your orders</h3>
 
-<section class="checkout">
-
-   <form action="" method="post">
-      <h3>place your order</h3>
       <div class="flex">
          <div class="inputBox">
             <span>your name :</span>
-            <input type="text" name="name" required placeholder="enter your name">
+            <input type="text" name="name" placeholder="enter your name" class="box" maxlength="20" required>
          </div>
          <div class="inputBox">
             <span>your number :</span>
-            <input type="number" name="number" required placeholder="enter your number">
+            <input type="number" name="number" placeholder="enter your number" class="box" min="0" max="9999999999" onkeypress="if(this.value.length == 10) return false;" required>
          </div>
          <div class="inputBox">
             <span>your email :</span>
-            <input type="email" name="email" required placeholder="enter your email">
+            <input type="email" name="email" placeholder="enter your email" class="box" maxlength="50" required>
          </div>
          <div class="inputBox">
             <span>payment method :</span>
@@ -149,16 +134,12 @@ if(isset($_POST['order'])){
             <input type="number" min="0" name="pin_code" required placeholder="e.g. 2200">
          </div>
       </div>
-      <input type="submit" value="order now" class="btn" name="order">
+
+      <input type="submit" name="order" class="btn <?= ($grand_total > 1)?'':'disabled'; ?>" value="place order">
+
    </form>
 
 </section>
-
-
-
-
-
-
 
 
 

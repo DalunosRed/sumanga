@@ -24,7 +24,7 @@ if(isset($_POST['send'])){
    }else{
       $select_message = $conn->prepare("INSERT INTO `message`(user_id, name, email, number, message) VALUES(?,?,?,?,?)");
       $select_message->execute([$user_id, $name, $email, $number, $msg]);
-      $message[] = 'message sent successfully!';
+      $success_msg[] = 'message sent successfully!';
    }
 
 }
@@ -98,6 +98,8 @@ if(isset($_POST['send'])){
 
 <!-- custom js file link  -->
 <script src="js/script.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+<?php include 'alers.php' ?>
 
 </body>
 </html>

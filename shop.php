@@ -64,7 +64,7 @@ if(isset($_POST['add_to_cart'])){
 <section class="products">
 
 <div class="product-display">
-<table class="product-display-table">
+<!-- <table class="product-display-table">
          
          <tr>
             <th >product image</th>
@@ -106,10 +106,10 @@ if(isset($_POST['add_to_cart'])){
          echo '<p class="empty">no products added yet!</p>';
       }
       ?>
-   </table>
+   </table> -->
 
 
-   <!-- <div class="box-container">
+   <div class="box-container">
 
    <?php
       $select_products = $conn->prepare("SELECT * FROM `products`");
@@ -134,7 +134,7 @@ if(isset($_POST['add_to_cart'])){
          echo '<p class="empty">no products added yet!</p>';
       }
       ?>
-   </div> -->
+   </div>
 
    </div>
 

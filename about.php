@@ -43,8 +43,8 @@ if(!isset($user_id)){
 
       <div class="content">
          <h3>why choose us?</h3>
-         <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eveniet voluptatibus aut hic molestias, reiciendis natus fuga, cumque excepturi veniam ratione iure. Excepturi fugiat placeat iusto facere id officia assumenda temporibus?</p>
-         <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Impedit quos enim minima ipsa dicta officia corporis ratione saepe sed adipisci?</p>
+         <p>An establishment that offers largely secondhand items at discount prices is called Sumanga Junk Shop. It is similar to a thrift store. An inferior antique store may resemble a junk store. Junkers, pickers, bargain hunters, and rummagers are terms used to describe people who shop at junk stores. You may find us in Purok 1, Lawak Amungan Iba, Zambales, close to Bakasyunan Beach Resort along the highway.</p>
+
          <a href="contact.php" class="btn">contact us</a>
       </div>
 
