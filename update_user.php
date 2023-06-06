@@ -35,8 +35,8 @@ if(isset($_POST['submit'])){
       $message[] = 'confirm password not matched!';
    }else{
       if($new_pass != $empty_pass){
-         $update_admin_pass = $conn->prepare("UPDATE `users` SET password = ? WHERE id = ?");
-         $update_admin_pass->execute([$cpass, $user_id]);
+         $update_pass = $conn->prepare("UPDATE `users` SET password = ? WHERE id = ?");
+         $update_pass->execute([$cpass, $user_id]);
          $success_msg[] = 'account updated successfully!';
       }else{
          $message[] = 'please enter a new password!';
@@ -54,7 +54,7 @@ if(isset($_POST['submit'])){
    <meta http-equiv="X-UA-Compatible" content="IE=edge">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>register</title>
-   
+   <link rel="icon" type="image/png"  href="images/logo-small.png">
    <!-- font awesome cdn link  -->
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
 
@@ -82,19 +82,6 @@ if(isset($_POST['submit'])){
 
 </section>
 
-
-
-
-
-
-
-
-
-
-
-
-
-<?php include 'components/footer.php'; ?>
 
 <script src="js/script.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>

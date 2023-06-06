@@ -23,7 +23,6 @@ if(isset($_POST['update_cart'])){
    $cart_quantity = filter_var($cart_quantity, FILTER_SANITIZE_STRING);
    $update_qty = $conn->prepare("UPDATE `cart` SET quantity = ? WHERE id = ?");
    $update_qty->execute([$cart_quantity, $cart_id]);
-   $message[] = 'cart quantity updated';
 }
 
 if(isset($_GET['delete'])){
@@ -47,7 +46,7 @@ if(isset($_GET['delete_all'])){
    <meta http-equiv="X-UA-Compatible" content="IE=edge">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>cart</title>
-
+   <link rel="icon" type="image/png"  href="images/logo-small.png">
    <!-- font awesome cdn link  -->
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 

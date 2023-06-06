@@ -15,14 +15,14 @@ if(isset($message)){
 
    <div class="header-2">
       <div class="flex">
-         <a href="index.php" class="logo">SUMANGA JUNKSHOP.</a>
+         <a href="index.php" class="logo">SUMANGA JUNKSHOP</a>
 
          <nav class="navbar">
-            <a href="index.php">home</a>
-            <a href="about.php">about</a>
-            <a href="shop.php">shop</a>
-            <a href="contact.php">contact</a>
-            <a href="orders.php">orders</a>
+            <a href="index.php">HOME</a>
+            <a href="about.php">ABOUT</a>
+            <a href="shop.php">SHOP</a>
+            <a href="contact.php">CONTACT</a>
+            <a href="orders.php">ORDERS</a>
          </nav>
 
          <div class="icons">

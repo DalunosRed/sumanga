@@ -61,34 +61,44 @@ if(isset($_GET['delete'])){
    header('location:admin_products.php');
 }
 
-if(isset($_POST['update_product'])){
+if(isset($_POST['update'])){
 
    $update_p_id = $_POST['update_p_id'];
    $update_name = $_POST['update_name'];
+   $update_name = filter_var($update_name, FILTER_SANITIZE_STRING);
    $update_cat = $_POST['update_cat'];
+   $update_cat = filter_var($update_cat, FILTER_SANITIZE_STRING);
    $update_price = $_POST['update_price'];
+   $update_price = filter_var($update_price, FILTER_SANITIZE_STRING);
 
-   $conn->prepare ("UPDATE `products` SET category ='$update_cat', name ='$update_name', price = '$update_price' WHERE id = '$update_p_id'");
 
-   $update_image = $_FILES['update_image']['name'];
-   $update_image = $_FILES['update_image']['cat'];
-   $update_image_tmp_name = $_FILES['update_image']['tmp_name'];
-   $update_image_size = $_FILES['update_image']['size'];
-   $update_folder = 'uploaded_img/'.$update_image;
-   $update_old_image = $_POST['update_old_image'];
+   $update_product = $conn->prepare ("UPDATE `products` SET category = ?, name = ?, price = ? WHERE id = ?");
+   $update_product->execute([$update_cat, $update_name, $update_price, $update_p_id]);
+   
+   $success_msg[] = ' Product has been updated!';
 
-   if(!empty($update_image)){
-      if($update_image_size > 2000000){
-         $message[] = 'image file size is too large';
+
+
+   $old_image = $_POST['update_old_image'];
+   $image = $_FILES['image']['name'];
+   $image = filter_var($image, FILTER_SANITIZE_STRING);
+   $image_size = $_FILES['image']['size'];
+   $image_tmp_name = $_FILES['image']['tmp_name'];
+   $image_folder = 'uploaded_img/'.$image;
+
+   if(!empty($image)){
+      if($image_size > 2000000){
+         $message[] = 'image size is too large!';
       }else{
-         $conn->prepare ("UPDATE `products` SET image = '$update_image' WHERE id = '$update_p_id'");
-         move_uploaded_file($update_image_tmp_name, $update_folder);
-         unlink('uploaded_img/'.$update_old_image);
+         $update_image = $conn->prepare("UPDATE `products` SET image = ? WHERE id = ?");
+         $update_image->execute([$image, $update_p_id]);
+         move_uploaded_file($image_tmp_name, $image_folder);
+        
       }
    }
 
    
-   $success_msg[] = ' Product has been updated!';
+  
 
 
 }
@@ -183,16 +193,16 @@ if(isset($_POST['update_product'])){
             ?>
       
       <tr>
-         <td><img src="uploaded_img/<?php echo $fetch_products['image']; ?>" height="100" alt=""></td>
+         <td><img src="uploaded_img/<?= $fetch_products['image']; ?>" height="100" alt=""></td>
          <td><?php echo $fetch_products['name']; ?></td>
          <td><?php echo $fetch_products['category']; ?></td>
          <td>₱<?php echo $fetch_products['price']; ?></td>
          <td>
-            <a href="admin_products.php?update=<?php echo $fetch_products['id']; ?>" data-toggle="modal" data-target="#exampleModal1" class="option-btn">update</a>
-           <a href="admin_products.php?delete=<?php echo $fetch_products['id']; ?>" class="delete-btn" onclick="return confirm('delete this product?');">delete</a>
+           <a href="admin_updateproduct.php?update=<?= $fetch_products['id']; ?>" class="option-btn">update</a>
+           <a href="admin_products.php?delete=<?= $fetch_products['id']; ?>" class="delete-btn" onclick="return confirm('delete this product?');">delete</a>
          </td>
-         
       </tr>
+     
 <?php
          }
       }else{
@@ -207,58 +217,40 @@ if(isset($_POST['update_product'])){
 
 
 
-<!-- <section class="edit-product-form">
 
-   <?php
-      if(isset($_GET['update'])){
-         $update_id = $_GET['update'];
-         $update_query =$conn->prepare ("SELECT * FROM `products` WHERE id = '$update_id'");
-         if(($update_query) > 0){
-            while($fetch_update = ($update_query)){
-   ?>
-   <form action="" method="post" enctype="multipart/form-data">
-      <input type="hidden" name="update_p_id" value="<?php echo $fetch_update['id']; ?>">
-      <input type="hidden" name="update_old_image" value="<?php echo $fetch_update['image']; ?>">
-      <img src="uploaded_img/<?php echo $fetch_update['image']; ?>" alt="">
-      <input type="text" name="update_name" value="<?php echo $fetch_update['name']; ?>" class="box" required placeholder="enter product name">
-      <input type="text" name="update_cat" value="<?php echo $fetch_update['category']; ?>" class="box" required placeholder="enter product category">
-      <input type="number" name="update_price" value="<?php echo $fetch_update['price']; ?>" min="0" class="box" required placeholder="enter product price">
-      <input type="file" class="box" name="update_image" accept="image/jpg, image/jpeg, image/png">
-      <input type="submit" value="update" name="update_product" class="btn">
-      <input type="reset" value="cancel" id="close-update" class="option-btn">
-   </form>
-   <?php
-         }
-      }
-      }else{
-         echo '<script>document.querySelector(".edit-product-form").style.display = "none";</script>';
-      }
-   ?>
-
-</section> -->
 
 <section class="add-products">
+
+
 <div class="modal fade" id="exampleModal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
+         
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
+
       <div class="modal-body">
         
    <h1 class="title">shop products</h1>
 
-<form action="" method="post" enctype="multipart/form-data">
-   <h3>update product</h3>
-   <input type="hidden" name="update_p_id" value="<?php echo $fetch_update['id']; ?>">
-   <input type="text" name="category" class="box" placeholder="enter category name" required>
-   <input type="number" min="0" name="price" class="box" placeholder="enter product price" required>
-   <input type="file" name="image" accept="image/jpg, image/jpeg, image/png" class="box" required>
-   <input type="submit" value="edit product" name="update_product" class="btn"> 
-   
-</form>
+
+
+   <form action="" method="post" enctype="multipart/form-data">
+      
+      <input type="hidden" name="update_p_id" value="<?= $fetch_update['id']; ?>">
+      <input type="hidden" name="update_old_image" value="<?= $fetch_update['image']; ?>">
+      <img src="uploaded_img/<?= $fetch_update['image']; ?>" alt="">
+      <input type="text" name="update_name"  class="box" required placeholder="enter product name">
+      <input type="text" name="update_cat"  class="box" required placeholder="enter product category">
+      <input type="number" name="update_price"  min="0" class="box" required placeholder="enter product price">
+      <input type="file" class="box" name="image" accept="image/jpg, image/jpeg, image/png">
+      <input type="submit" value="update" name="update" class="btn">
+
+   </form>
+ 
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -267,8 +259,11 @@ if(isset($_POST['update_product'])){
     </div>
   </div>
 </div>
-</section>
 
+   
+
+
+</section>
 
 
 

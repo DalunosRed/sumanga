@@ -39,12 +39,13 @@ if(isset($_POST['submit'])){
    <meta http-equiv="X-UA-Compatible" content="IE=edge">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>login</title>
+   <link rel="icon" type="image/png"  href="images/logo-small.png">
 
    <!-- font awesome cdn link  -->
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
    <!-- custom css file link  -->
-   <link rel="stylesheet" href="css/style.css">
+   <link rel="stylesheet" href="css/login.css">
 
 </head>
 <body>
@@ -62,7 +63,7 @@ if(isset($message)){
 }
 ?>
    <div class="reg">
-   <form class="form" action="" method="post">
+   <!-- <form class="form" action="" method="post">
     <p class="title">Login </p>
             
     <label>
@@ -78,8 +79,37 @@ if(isset($message)){
     <input type="submit" name="submit" value="Login" class="submit">
   
     <p class="signin">don't have an account? <a href="register.php">register now</a></p>
-</form>
+</form> -->
 
+<section class="w3l-mockup-form">
+        <div class="container">
+            <!-- /form -->
+            <div class="workinghny-form-grid">
+                <div class="main-mockup">
+                    <div class="alert-close">
+                        <span class="fa fa-close"></span>
+                    </div>
+                    <div class="w3l_form align-self">
+                        <div class="left_grid_info">
+                            <img src="images/logo-small.png" alt="">
+                        </div>
+                    </div>
+                    <div class="content-wthree">
+                        <h2>Login Now</h2>
+                        <form action="" method="post">
+                            <input type="email" class="email" name="email" placeholder="Enter Your Email" required>
+                            <input type="password" class="password" name="password" placeholder="Enter Your Password" style="margin-bottom: 2px;" required>
+                            <button name="submit" name="submit" class="btn" type="submit">Login</button>
+                        </form>
+                        <div class="social-icons">
+                            <p>Create Account! <a href="register.php">Register</a>.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- //form -->
+        </div>
+    </section>
 
 
 

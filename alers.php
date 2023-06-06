@@ -36,6 +36,12 @@ if(isset($success_admin)){
    }
 }
 
+if(isset($success_upd)){
+   foreach($success_upd as $success_upd){
+      echo '<script>swal("'.$success_upd.'", "", "success").then(function(){window.location = "admin_products.php"});</script>';
+   }
+}
+
 if(isset($warning_msg)){
    foreach($warning_msg as $warning_msg){
       echo '<script>swal("'.$warning_msg.'", "", "success").then(function(){window.location = "admin_contacts.php"});</script>';

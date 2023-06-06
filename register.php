@@ -42,12 +42,13 @@ if(isset($_POST['submit'])){
    <meta http-equiv="X-UA-Compatible" content="IE=edge">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>register</title>
+   <link rel="icon" type="image/png"  href="images/logo-small.png">
 
    <!-- font awesome cdn link  -->
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
    <!-- custom css file link  -->
-   <link rel="stylesheet" href="css/style.css">
+   <link rel="stylesheet" href="css/login.css">
 
 </head>
 <body>
@@ -66,7 +67,7 @@ if(isset($message)){
    }
 }
 ?>
-   <div class="reg">
+   <!-- <div class="reg">
    <form class="form" action="" method="post">
     <p class="title">Register </p>
     <p class="message">Signup now and get full access to our website. </p>
@@ -98,7 +99,40 @@ if(isset($message)){
     <input type="submit" name="submit" value="register now" class="submit">
     <p class="signin">Already have an acount ?<a href="login.php">Signin</a> </p>
 </form>
-</div>
+</div> -->
+
+<section class="w3l-mockup-form">
+        <div class="container">
+            <!-- /form -->
+            <div class="workinghny-form-grid">
+                <div class="main-mockup">
+                    <div class="alert-close">
+                        <span class="fa fa-close"></span>
+                    </div>
+                    <div class="w3l_form align-self">
+                        <div class="left_grid_info">
+                            <img src="images/logo-small.png" alt="">
+                        </div>
+                    </div>
+                    <div class="content-wthree">
+                        <h2>Register Now</h2>
+                        <form action="" method="post">
+                        <input required="" placeholder="Enter your Last name" type="text" name="last_name" class="name">
+                        <input required="" placeholder="Enter your First name" type="text" name="first_name" class="name">
+                        <input required="" placeholder="Enter your email address" type="email" name="email" class="input">
+                        <input required="" type="password" name="password" class="input">
+                        <input required=""  type="password" name="cpassword" class="input">
+                            <button name="submit" class="btn" type="submit">Register</button>
+                        </form>
+                        <div class="social-icons">
+                            <p>Have an account! <a href="login.php">Login</a>.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- //form -->
+        </div>
+    </section>
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
